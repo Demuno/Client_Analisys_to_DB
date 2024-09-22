@@ -1,9 +1,8 @@
 import requests
 import time
 
-from main import df_treated
 
-# from src.main import df
+from src.main import df_treated
 
 def consult_cep(cep):
     url = f"https://viacep.com.br/ws/{cep}/json/"
@@ -29,3 +28,4 @@ for index, row in df_treated.iterrows():
     else:
         df_treated.at[index, 'logradouro'] = 'CEP não encontrado'
         df_treated.at[index, 'estado'] = 'CEP não encontrado'
+

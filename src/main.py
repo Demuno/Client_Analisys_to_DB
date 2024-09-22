@@ -2,11 +2,11 @@ import os
 import pandas as pd
 import requests
 import uuid
+import re
 
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-import asyncio
 from dotenv import load_dotenv
 
 def generate_v4x_uuid():
@@ -79,6 +79,10 @@ df_treated_clients['id'] = [generate_v4x_uuid() for _ in range(len(df))]
 df_treated_clients['created_at'] = datetime.now()
 df_treated_clients['observations'] = 'Sem Observações'
 
+df_treated_clients['document'] = df_treated_clients['document'].astype(str)
+df_treated_clients['document'] = df_treated_clients['document'].apply(lambda x: re.sub(r'[^a-zA-Z0-9\s]', '', x))
+df_treated_clients['document'] = df_treated_clients['document'].str.replace(' ', '', regex=True)
+
 df_treated_address.rename(columns={'id': 'address_id'}, inplace=True)
 
 df_treated_clients['address_id'] = df_treated_address['address_id'].values
@@ -86,3 +90,5 @@ df_treated_clients['address_id'] = df_treated_address['address_id'].values
 df_treated_clients = df_treated_clients[['id', 'phone', 'email', 'name', 'created_at', 'document', 'address_id', 'observations']]
 
 df_treated_clients.to_sql('clients', con=engine, if_exists='append', index=False)
+
+print(df_treated_clients)
